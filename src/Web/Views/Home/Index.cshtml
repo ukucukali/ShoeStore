@@ -14,13 +14,13 @@
             </div>
 
             <div class="col-12">
-                <select class="form-select" asp-items="Model.Categories" asp-for="CategoryId" >
+                <select class="form-select" asp-items="Model.Categories" asp-for="CategoryId">
                     <option value="">All</option>
                 </select>
             </div>
 
             <div class="col-12">
-                  <label> Brand</label>
+                <label> Brand</label>
             </div>
 
             <div class="col-12">
@@ -53,3 +53,37 @@
         </div>
     }
 </div>
+
+@{
+    var pi = Model.PaginationInfo;
+}
+<p class="text-center">
+    Showing @pi.Start - @pi.End of @pi.TotalItems items
+</p>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.PaginationInfo.HasPrevious ? "":"disabled")">
+            <a class="page-link" asp-route-p="@(pi.CurrentPage-1)"asp-route-categoryId="@(Model.CategoryId)" asp-route-brandId="@(Model.BrandId)">Previous</a>
+        </li>
+
+        @foreach(int i in pi.PageNumbers)
+        {
+            @if (i==-1)
+           {
+              <li class="page-item disabled ">
+                <a class="page-link " >&hellip;</a>
+              </li>
+           }
+           else{
+            <li class="page-item @(i== pi.CurrentPage ? "active":"") ">
+                <a class="page-link " asp-route-p="@i" asp-route-categoryId="@(Model.CategoryId)" asp-route-brandId="@(Model.BrandId)">@i</a>
+            </li>
+           }
+        }
+
+        <li class="page-item @(Model.PaginationInfo.HasNext ? "":"disabled")"asp-route-categoryId="@(Model.CategoryId)" asp-route-brandId="@(Model.BrandId)">
+            <a class="page-link " asp-route-p="@(pi.CurrentPage+1)">Next</a>
+        </li>
+    </ul>
+</nav>

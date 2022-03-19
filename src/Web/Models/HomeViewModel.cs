@@ -10,5 +10,6 @@ namespace Web.Models
         public List<SelectListItem> Brands { get; set; }
         public int? CategoryId { get; set; }
         public int? BrandId { get; set; }
+        public PaginationViewModel PaginationInfo { get; set; }
     }
 }

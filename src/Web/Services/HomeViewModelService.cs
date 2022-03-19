@@ -2,6 +2,7 @@
 using ApplicationCore.Interfaces;
 using ApplicationCore.Specifications;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,9 @@ namespace Web.Services
 
         public async Task<HomeViewModel> GetHomeViewModelAsync(int? categoryId, int? brandId, int page)
         {
+            var specAllProduct = new ProductFilterSpecification(categoryId, brandId);
+            int totalItems = await _productRepo.CountAsync(specAllProduct);
+            int totalPages = (int)Math.Ceiling((double)totalItems / Constants.ITEMS_PER_PAGE);
             var specProduct = new ProductFilterSpecification(categoryId, brandId, (page - 1) * Constants.ITEMS_PER_PAGE, Constants.ITEMS_PER_PAGE);
             List<Product> products = await _productRepo.GetAllAsync(specProduct);
             HomeViewModel vm = new HomeViewModel()
@@ -42,7 +46,16 @@ namespace Web.Services
                 .Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList()
                 ,
                 CategoryId = categoryId,
-                BrandId = brandId
+                BrandId = brandId,
+                PaginationInfo = new PaginationViewModel()
+                {
+                    CurrentPage = page,
+                    ItemsOnPage = products.Count,
+                    TotalItems = totalItems,
+                    TotalPages = totalPages,
+                    HasPrevious = page > 1,
+                    HasNext = page < totalPages
+                }
             };
             return vm;
         }
